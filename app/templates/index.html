@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Баннер -->
+<section class="banner">
+    <h1>СКИДКА 20% НА ВЕСЬ АССОРТИМЕНТ</h1>
+    <p>Только до конца месяца! Успейте приобрести любимую косметику по выгодным ценам</p>
+    <a href="/catalog" class="btn btn-primary">Перейти к покупкам</a>
+</section>
+
+<!-- Популярные товары -->
+<section class="popular-products">
+    <div class="container">
+        <h2>Популярные товары</h2>
+        <div class="products-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-image">
+                    {% if product.image %}
+                    <img src="/static/images/{{ back-image.avif }}" alt="{{ product.name }}">
+                    {% else %}
+                    🧴
+                    {% endif %}
+                </div>
+                <h3>{{ product.name }}</h3>
+                <p class="product-price">{{ product.price }} грн</p>
+                <p><small>Бренд: {{ product.brand }}</small></p>
+                <button class="btn" onclick="addToCart({ product,id }, '{{ product.name }}', { product,price })">
+                    В корзину
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center">
+            <a href="/catalog" class="btn btn-primary">Смотреть все товары</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

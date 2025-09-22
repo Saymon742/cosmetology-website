@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Каталог товаров - CosmoBeauty{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Каталог товаров</h1>
+    
+    <!-- Фильтры -->
+    <div class="filters">
+        <h3>Фильтры</h3>
+        <div class="filter-grid">
+            <div class="form-group">
+                <label>Категория:</label>
+                <select id="category-filter" onchange="filterProducts()">
+                    <option value="">Все категории</option>
+                    {% for category in categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Бренд:</label>
+                <select id="brand-filter" onchange="filterProducts()">
+                    <option value="">Все бренды</option>
+                    {% for brand in brands %}
+                    <option value="{{ brand }}">{{ brand }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Цена до:</label>
+                <input type="number" id="price-filter" placeholder="Макс. цена" onchange="filterProducts()">
+            </div>
+        </div>
+    </div>
+
+    <!-- Сетка товаров -->
+    <div class="products-grid">
+        {% for product in products %}
+        <div class="product-card">
+            <div class="product-image">
+                {% if product.image %}
+                <img src="/static/images/{{ product.image }}" alt="{{ product.name }}">
+                {% else %}
+                🧴
+                {% endif %}
+            </div>
+            <h3>{{ product.name }}</h3>
+            <p class="product-price">{{ product.price }} грн</p>
+            <p><small>Бренд: {{ product.brand }} | Категория: {{ product.category }}</small></p>
+            <button class="btn" onclick="addToCart({ product,id }, '{{ product.name }}', { product,price })">
+                В корзину
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if not products %}
+    <div class="no-products">
+        <h3>Товары не найдены</h3>
+        <p>Попробуйте изменить параметры фильтрации</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

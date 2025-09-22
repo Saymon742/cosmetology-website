@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CosmoBeauty - Интернет-магазин косметики{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">CosmoBeauty</div>
+            <ul class="nav-menu">
+                <li><a href="/" {% if request.url.path == '/' %}class="active"{% endif %}>Главная</a></li>
+                <li><a href="/catalog" {% if request.url.path == '/catalog' %}class="active"{% endif %}>Каталог</a></li>
+                <li><a href="/about" {% if request.url.path == '/about' %}class="active"{% endif %}>О нас</a></li>
+                <li><a href="/cart" {% if request.url.path == '/cart' %}class="active"{% endif %}>Корзина<span id="cart-counter">0</span></a></li>
+                <li><a href="/settings" {% if request.url.path == '/settings' %}class="active"{% endif %}>Настройки</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>© 2024 CosmoBeauty. Все права защищены</p>
+            <p>Телефон: +38 (099) 123-45-67 | Email: info@cosmobeauty.com</p>
+            <div class="social-links">
+                <a href="#">Instagram</a>
+                <a href="#">Facebook</a>
+                <a href="#">Telegram</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/scripts.js"></script>
+</body>
+</html>
