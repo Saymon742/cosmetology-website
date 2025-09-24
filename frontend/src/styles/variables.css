@@ -1,0 +1,15 @@
+:root {
+  /* Colors */
+  --cosmetic-pink: #ff6b8b;
+  --cosmetic-purple: #a78bfa;
+  --cosmetic-green: #34d399;
+  --cosmetic-gold: #fbbf24;
+  
+  /* Typography */
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+  
+  /* Spacing */
+  --section-padding: 80px 0;
+  --card-padding: 24px;
+}
