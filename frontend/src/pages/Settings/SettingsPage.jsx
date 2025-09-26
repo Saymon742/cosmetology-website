@@ -223,7 +223,7 @@ const SettingsPage = () => {
                   </div>
                 </div>
               )}
-s
+
               {activeTab === 'appearance' && (
                 <div className="tab-content">
                   <h2>Налаштування зовнішнього вигляду</h2>

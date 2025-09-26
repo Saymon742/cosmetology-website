@@ -1,10 +1,57 @@
 .layout {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .main-content {
-  flex: 1;
-  padding: 20px 0;
+    flex: 1;
+    padding-top: 100px; /* Отступ для фиксированного хедера */
+    min-height: calc(100vh - 100px);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Стили для контента с белым фоном */
+.content-wrapper {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 40px;
+    margin: 20px 0 40px; /* Добавил отступ снизу для футера */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    min-height: 500px;
+}
+
+/* Адаптивность */
+@media (max-width: 968px) {
+    .main-content {
+        padding-top: 80px;
+        min-height: calc(100vh - 80px);
+    }
+    
+    .content-wrapper {
+        padding: 20px;
+        margin: 10px 0 20px;
+        border-radius: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        padding-top: 70px;
+    }
+    
+    .container {
+        padding: 0 1rem;
+    }
+    
+    .content-wrapper {
+        padding: 15px;
+        margin: 5px 0 15px;
+    }
 }

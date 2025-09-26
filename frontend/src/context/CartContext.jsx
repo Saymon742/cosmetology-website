@@ -1,107 +1,94 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 const CartContext = createContext();
 
 export const useCart = () => {
-  const context = useContext(CartContext);
-  if (!context) {
-    // Возвращаем заглушку, если контекст не найден
-    return {
-      cartItems: [],
-      addToCart: () => {},
-      removeFromCart: () => {},
-      updateQuantity: () => {},
-      clearCart: () => {},
-      getCartTotal: () => 0,
-      getCartItemsCount: () => 0
-    };
-  }
-  return context;
+    const context = useContext(CartContext);
+    if (!context) {
+        throw new Error('useCart must be used within a CartProvider');
+    }
+    return context;
 };
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+    const [cartItems, setCartItems] = useState([]);
+    const [showNotification, setShowNotification] = useState(false);
+    const [notificationMessage, setNotificationMessage] = useState('');
 
-  useEffect(() => {
-    const savedCart = localStorage.getItem('beautycosm-cart');
-    if (savedCart) {
-      setCartItems(JSON.parse(savedCart));
-    }
-  }, []);
+    const showCartNotification = (message) => {
+        setNotificationMessage(message);
+        setShowNotification(true);
+        setTimeout(() => setShowNotification(false), 3000);
+    };
 
-  const saveCartToStorage = (items) => {
-    localStorage.setItem('beautycosm-cart', JSON.stringify(items));
-  };
+    const addToCart = (product) => {
+        setCartItems(prevItems => {
+            const existingItem = prevItems.find(item => item.id === product.id);
+            
+            if (existingItem) {
+                showCartNotification(`Товар "${product.name}" обновлен в корзине!`);
+                return prevItems.map(item =>
+                    item.id === product.id
+                        ? { ...item, quantity: item.quantity + 1 }
+                        : item
+                );
+            } else {
+                showCartNotification(`Товар "${product.name}" добавлен в корзину! 🎉`);
+                return [...prevItems, { ...product, quantity: 1 }];
+            }
+        });
+    };
 
-  const addToCart = (product) => {
-    setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.id === product.id);
-      let newItems;
-      
-      if (existingItem) {
-        newItems = prevItems.map(item =>
-          item.id === product.id 
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
+    const removeFromCart = (productId) => {
+        setCartItems(prevItems => {
+            const removedItem = prevItems.find(item => item.id === productId);
+            if (removedItem) {
+                showCartNotification(`Товар "${removedItem.name}" удален из корзины`);
+            }
+            return prevItems.filter(item => item.id !== productId);
+        });
+    };
+
+    const updateQuantity = (productId, quantity) => {
+        if (quantity < 1) {
+            removeFromCart(productId);
+            return;
+        }
+        
+        setCartItems(prevItems => 
+            prevItems.map(item =>
+                item.id === productId ? { ...item, quantity } : item
+            )
         );
-      } else {
-        newItems = [...prevItems, { ...product, quantity: 1 }];
-      }
-      
-      saveCartToStorage(newItems);
-      return newItems;
-    });
-  };
+    };
 
-  const removeFromCart = (productId) => {
-    setCartItems(prevItems => {
-      const newItems = prevItems.filter(item => item.id !== productId);
-      saveCartToStorage(newItems);
-      return newItems;
-    });
-  };
+    const clearCart = () => {
+        showCartNotification('Корзина очищена!');
+        setCartItems([]);
+    };
 
-  const updateQuantity = (productId, quantity) => {
-    if (quantity <= 0) {
-      removeFromCart(productId);
-      return;
-    }
+    const getCartTotal = () => {
+        return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    };
 
-    setCartItems(prevItems => {
-      const newItems = prevItems.map(item =>
-        item.id === productId ? { ...item, quantity } : item
-      );
-      saveCartToStorage(newItems);
-      return newItems;
-    });
-  };
+    const getCartItemsCount = () => {
+        return cartItems.reduce((count, item) => count + item.quantity, 0);
+    };
 
-  const clearCart = () => {
-    setCartItems([]);
-    localStorage.removeItem('beautycosm-cart');
-  };
-
-  const getCartTotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
-
-  const getCartItemsCount = () => {
-    return cartItems.reduce((count, item) => count + item.quantity, 0);
-  };
-
-  const value = {
-    cartItems,
-    addToCart,
-    removeFromCart,
-    updateQuantity,
-    clearCart,
-    getCartTotal,
-    getCartItemsCount
-  };
-
-  return (
-    <CartContext.Provider value={value}>
-      {children}
-    </CartContext.Provider>
-  );
+    return (
+        <CartContext.Provider value={{
+            cartItems,
+            addToCart,
+            removeFromCart,
+            updateQuantity,
+            clearCart,
+            getCartTotal,
+            getCartItemsCount,
+            showNotification,
+            notificationMessage,
+            setShowNotification
+        }}>
+            {children}
+        </CartContext.Provider>
+    );
 };

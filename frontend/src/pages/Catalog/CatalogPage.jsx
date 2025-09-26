@@ -2,6 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
 import './CatalogPage.css';
 
+
+const ProductCard = ({ product }) => {
+    const { addToCart } = useCart();
+
+    return (
+        <div className="product-card">
+            <h3>{product.name}</h3>
+            <button onClick={() => addToCart(product)}>
+                Добавить в корзину
+            </button>
+        </div>
+    );
+};
+
 const CatalogPage = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
