@@ -1,0 +1,9 @@
+{
+  "name": "beautycosm-backend",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "flask run --port=5000",
+    "init-demo": "flask init-demo",
+    "start": "gunicorn main:app"
+  }
+}

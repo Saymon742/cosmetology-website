@@ -1,50 +1,106 @@
 const API_BASE_URL = 'http://localhost:5000/api';
 
-// Базовые методы API
-export const api = {
-  get: async (endpoint) => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+class ApiService {
+    constructor() {
+        this.token = localStorage.getItem('auth_token');
     }
-    return response.json();
-  },
 
-  post: async (endpoint, data) => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    setToken(token) {
+        this.token = token;
+        localStorage.setItem('auth_token', token);
     }
-    return response.json();
-  },
 
-  put: async (endpoint, data) => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.json();
-  },
+    async request(endpoint, options = {}) {
+        const url = `${API_BASE_URL}${endpoint}`;
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers,
+            },
+            ...options,
+        };
 
-  delete: async (endpoint) => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+        if (this.token) {
+            config.headers.Authorization = `Bearer ${this.token}`;
+        }
+
+        try {
+            const response = await fetch(url, config);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'API request failed');
+            }
+
+            return data;
+        } catch (error) {
+            console.error('API request error:', error);
+            throw error;
+        }
     }
-    return response.json();
-  },
-};
+
+    async login(email) {
+        const data = await this.request('/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({ email }),
+        });
+        if (data.access_token) {
+            this.setToken(data.access_token);
+        }
+        return data;
+    }
+
+    async adminLogin() {
+        const data = await this.request('/auth/admin-login', {
+            method: 'POST',
+        });
+        if (data.access_token) {
+            this.setToken(data.access_token);
+        }
+        return data;
+    }
+
+    async getProducts(filters = {}) {
+        const params = new URLSearchParams();
+        Object.entries(filters).forEach(([key, value]) => {
+            if (value) params.append(key, value);
+        });
+        
+        return this.request(`/products?${params}`);
+    }
+
+    async getProduct(id) {
+        return this.request(`/products/${id}`);
+    }
+
+    async getCategories() {
+        return this.request('/categories');
+    }
+
+    async createOrder(orderData) {
+        return this.request('/orders', {
+            method: 'POST',
+            body: JSON.stringify(orderData),
+        });
+    }
+
+    async getOrders() {
+        return this.request('/orders');
+    }
+
+    async getAdminStats() {
+        return this.request('/admin/stats');
+    }
+
+    async getAdminOrders() {
+        return this.request('/admin/orders');
+    }
+
+    async initDemoData() {
+        return this.request('/init-demo-data', {
+            method: 'POST',
+        });
+    }
+}
+
+export const apiService = new ApiService();

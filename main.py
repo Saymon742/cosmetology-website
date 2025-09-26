@@ -9,7 +9,6 @@ app = FastAPI(title="Cosmetics Shop")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
-# Пример данных товаров
 sample_products = [
     {"id": 1, "name": "Увлажняющий крем", "price": 450, "category": "Уход за лицом", "brand": "L'Oreal"},
     {"id": 2, "name": "Тонизирующая сыворотка", "price": 680, "category": "Сыворотки", "brand": "Vichy"},
